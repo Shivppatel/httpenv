@@ -11,9 +11,14 @@ jobs:
     name: Build Image
     runs-on: ubuntu-latest
     permissions: 
+      contents: read
       pull-requests: write
+      security-events: write
 
     steps:
+
+      - name: Checkout git repo
+        uses: actions/checkout@v4
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
@@ -26,8 +31,37 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
+        
+      - name: Build and export to Docker
+        uses: docker/build-push-action@v4
+        with:
+          push: false
+          load: true
+          tags: ${{ github.run_id }}
+          target: test
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          platforms: linux/amd64
 
-      - name: Docker meta
+      - name: Run Trivy for all CVEs (non-blocking)
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ${{ github.run_id }}
+          format: table
+          exit-code: 0
+
+      - name: Run Trivay for HIGH, CRITICAL CVEs and report (blocking)
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ${{ github.run_id }}
+          exit-code: 1
+          ignore-undifined: true
+          vuln-type: 'os,library'
+          severity: 'HIGH,CRITICAL'
+          format: 'serif'
+          output: 'trivy-results.sarif'
+
+      - name: Docker Metadata for Final Image Build
         id: docker_meta
         uses: docker/metadata-action@v4
         with:
@@ -35,13 +69,12 @@ jobs:
           flavor: |
             latest=false
           tags: |
-            type=raw,value=04
             type=raw,value=latest,enable=${{ endsWith(github.ref, github.event.repository.default_branch) }}
             type=ref,event=pr
             type=ref,event=branch
             type=semver,pattern={{version}}
 
-      - name: Docker build
+      - name: Docker Build and Push to Docker Hub
         uses: docker/build-push-action@v4
         with:
           push: true
