@@ -26,7 +26,7 @@ jobs:
 
       - name: Docker meta
         id: docker_meta
-        uses: docker/meta-action@v4
+        uses: docker/metadata-action@v4
         with:
           images: shivppatel/httpenv
           flavor: |
