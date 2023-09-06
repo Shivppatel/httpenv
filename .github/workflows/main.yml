@@ -55,7 +55,7 @@ jobs:
         with:
           image-ref: ${{ github.run_id }}
           exit-code: 1
-          ignore-undifined: true
+          ignore-unfixed: true
           vuln-type: 'os,library'
           severity: 'HIGH,CRITICAL'
           format: 'sarif'
