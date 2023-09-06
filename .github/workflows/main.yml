@@ -8,7 +8,7 @@ on:
 
 jobs:
   buildx:
-    name: Build Image
+    name: Build and Scane + Report
     runs-on: ubuntu-latest
     permissions: 
       contents: read
@@ -58,7 +58,7 @@ jobs:
           ignore-undifined: true
           vuln-type: 'os,library'
           severity: 'HIGH,CRITICAL'
-          format: 'serif'
+          format: 'sarif'
           output: 'trivy-results.sarif'
 
       - name: Docker Metadata for Final Image Build
