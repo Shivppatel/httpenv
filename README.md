@@ -1,7 +1,7 @@
 # httpenv
 Tiny HTTP server showing the environment variables on TCP 8888.
 
-[![Docker Build](https://github.com/ShivPPatel/httpenv/actions/workflows/call-docker-build.yaml/badge.svg)](https://github.com/ShivPPatel/httpenv/actions/workflows/call-docker-build.yaml)
+[![Docker Build](https://github.com/ShivPPatel/httpenv/actions/workflows/main.yaml/badge.svg)](https://github.com/ShivPPatel/httpenv/actions/workflows/main.yaml)
 
 
 Images for `linux/x86_64` (amd64), `linux/arm64` (v8), and `linux/arm/v7`
